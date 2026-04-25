@@ -50,4 +50,11 @@ public class UserRepositoryJPA implements UserRepositoryApplication {
         repository.save(entity);
         return mapper.toDomain(entity);
     }
+
+    @Override
+    public User findByEmail(String email) {
+        UserEntity entity = repository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: "));
+        return mapper.toDomain(entity);
+    }
 }

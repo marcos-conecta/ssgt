@@ -15,4 +15,6 @@ public interface UserRepositoryApplication {
     void deleteUser(Long id);
 
     User updateUser(User user);
+
+    User findByEmail(String email);
 }

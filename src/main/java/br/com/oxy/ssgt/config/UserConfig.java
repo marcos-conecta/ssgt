@@ -7,13 +7,14 @@ import br.com.oxy.ssgt.infra.gateways.UserRepositoryJPA;
 import br.com.oxy.ssgt.infra.persistence.user.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class UserConfig {
 
     @Bean
-    CreateUser createUser(UserRepositoryApplication repositoryUser) {
-        return new CreateUser(repositoryUser);
+    CreateUser createUser(UserRepositoryApplication repositoryUser, PasswordEncoder passwordEncoder) {
+        return new CreateUser(repositoryUser, passwordEncoder);
     }
 
     @Bean
@@ -46,4 +47,10 @@ public class UserConfig {
 
         return new UserEntityMapper();
     }
+
+    @Bean
+    FindUserByEmail findUserByEmail(UserRepositoryApplication repositoryUser) {
+        return new FindUserByEmail(repositoryUser);
+    }
+
 }
