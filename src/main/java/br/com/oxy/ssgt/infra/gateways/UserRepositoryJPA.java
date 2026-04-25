@@ -3,16 +3,15 @@ package br.com.oxy.ssgt.infra.gateways;
 
 import br.com.oxy.ssgt.application.gateways.UserRepositoryApplication;
 import br.com.oxy.ssgt.domain.entities.user.User;
-import br.com.oxy.ssgt.infra.persistence.UserEntity;
-import br.com.oxy.ssgt.infra.persistence.UserRepository;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import br.com.oxy.ssgt.infra.persistence.user.UserEntity;
+import br.com.oxy.ssgt.infra.persistence.user.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public class UserRepositoryJPA implements UserRepositoryApplication {
 
-    private UserRepository repository;
-    private UserEntityMapper mapper;
+    private final UserRepository repository;
+    private final UserEntityMapper mapper;
 
     public UserRepositoryJPA(UserRepository repository, UserEntityMapper mapper) {
         this.repository = repository;
@@ -27,9 +26,28 @@ public class UserRepositoryJPA implements UserRepositoryApplication {
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return repository.findAll().stream()
+    public Page<User> getAllUsers(Pageable pageable) {
+        return repository.findAll(pageable)
+                .map(mapper::toDomain);
+    }
+
+    @Override
+    public User findById(Long id) {
+        return repository.findById(id)
                 .map(mapper::toDomain)
-                .collect(Collectors.toList());
+                .orElse(null);
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        repository.deleteById(id);
+
+    }
+
+    @Override
+    public User updateUser(User user) {
+        UserEntity entity = mapper.toEntity(user);
+        repository.save(entity);
+        return mapper.toDomain(entity);
     }
 }

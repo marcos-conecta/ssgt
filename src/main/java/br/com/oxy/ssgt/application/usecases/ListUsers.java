@@ -2,8 +2,8 @@ package br.com.oxy.ssgt.application.usecases;
 
 import br.com.oxy.ssgt.application.gateways.UserRepositoryApplication;
 import br.com.oxy.ssgt.domain.entities.user.User;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public class ListUsers {
 
@@ -13,7 +13,7 @@ public class ListUsers {
         this.repository = repository;
     }
 
-   public List<User> getAllUsers() {
-        return this.repository.getAllUsers();
+    public Page<User> getAllUsers(Pageable pageable) {
+        return this.repository.getAllUsers(pageable);
     }
 }

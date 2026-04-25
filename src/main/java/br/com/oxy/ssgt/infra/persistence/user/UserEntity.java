@@ -1,4 +1,4 @@
-package br.com.oxy.ssgt.infra.persistence;
+package br.com.oxy.ssgt.infra.persistence.user;
 
 import jakarta.persistence.*;
 
@@ -15,10 +15,19 @@ public class UserEntity {
 
     public UserEntity() {}
 
-    public UserEntity(String name, String email, String password) {
+    public UserEntity(Long id, String name, String email, String password) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
