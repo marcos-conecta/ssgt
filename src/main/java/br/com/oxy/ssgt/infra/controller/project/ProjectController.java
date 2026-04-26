@@ -10,6 +10,8 @@ import jakarta.validation.Valid;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -105,22 +107,28 @@ public class ProjectController {
 
     @Operation(summary = "Update project", description = "Updates the details of an existing project.")
     @PutMapping
-    public void updateProject(@RequestBody @Valid ProjectDTO dto) {
-        Project project = findProjectById.findById(dto.id());
+    public ProjectDTO updateProject(@RequestBody @Valid ProjectDTO dto, Authentication authentication) {
         User owner = findUserById.findById(dto.ownerId());
 
-        updateProject.updateProject(
-                new Project(
-                        dto.id(),
-                        dto.name(),
-                        dto.description(),
-                        owner,
-                        dto.members()
-                                .stream()
-                                .map(findUserById::findById)
-                                .toList()
-                )
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        Long currentUserId = jwt.getClaim("userId");
+
+        List<User> members = dto.members()
+                .stream()
+                .map(findUserById::findById)
+                .toList();
+
+        Project project = new Project(
+                dto.id(),
+                dto.name(),
+                dto.description(),
+                owner,
+                members
         );
+
+        Project projectUpdate = updateProject.updateProject(currentUserId, project);
+
+        return new ProjectDTO(projectUpdate);
     }
 
     @Operation(summary = "Delete project", description = "Deletes a project from the system by its unique ID.")

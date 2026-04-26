@@ -23,13 +23,13 @@ public class Task {
 
     private LocalDateTime updatedAt;
 
-    private Long deadline;
+    private LocalDateTime deadline;
 
     private Project project;
 
     private User assignedUser;
 
-    public Task(Long id, String title, String description, TaskStatus status, TaskPriority priority, LocalDateTime createdAt, LocalDateTime updatedAt, Long deadline, Project project, User assignedUser) {
+    public Task(Long id, String title, String description, TaskStatus status, TaskPriority priority, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deadline, Project project, User assignedUser) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -98,11 +98,11 @@ public class Task {
         this.updatedAt = updatedAt;
     }
 
-    public Long getDeadline() {
+    public LocalDateTime getDeadline() {
         return deadline;
     }
 
-    public void setDeadline(Long deadline) {
+    public void setDeadline(LocalDateTime deadline) {
         this.deadline = deadline;
     }
 

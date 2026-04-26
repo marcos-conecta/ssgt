@@ -28,7 +28,7 @@ public class TaskEntity {
 
     private LocalDateTime updatedAt;
 
-    private Long deadline;
+    private LocalDateTime deadline;
 
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
@@ -40,7 +40,7 @@ public class TaskEntity {
 
     public TaskEntity() {}
 
-    public TaskEntity(Long id, String title, String description, TaskStatus status, TaskPriority priority, LocalDateTime createdAt, LocalDateTime updatedAt, Long deadline, ProjectEntity project, UserEntity assignedUser) {
+    public TaskEntity(Long id, String title, String description, TaskStatus status, TaskPriority priority, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deadline, ProjectEntity project, UserEntity assignedUser) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -124,11 +124,11 @@ public class TaskEntity {
         this.updatedAt = updatedAt;
     }
 
-    public Long getDeadline() {
+    public LocalDateTime getDeadline() {
         return deadline;
     }
 
-    public void setDeadline(Long deadline) {
+    public void setDeadline(LocalDateTime deadline) {
         this.deadline = deadline;
     }
 

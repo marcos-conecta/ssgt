@@ -13,6 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -120,11 +122,14 @@ public class TaskController {
 
     @Operation(summary = "Update an existing task", description = "Updates the details of an existing task in the system.")
     @PutMapping
-    public void updateTask(@PathVariable Long id, @RequestHeader ("X-User-Id") Long currentUserId, @RequestBody @Valid TaskDTO dto) {
+    public TaskDTO updateTask(@RequestBody @Valid TaskDTO dto, Authentication authentication) {
         Task task = findTaskById.findById(dto.id());
         Project project = findProjectById.findById(dto.projectId());
         User assignedUser = findUserById.findById(dto.assignedUserId());
-        updateTask.updateTask(
+
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        Long currentUserId = jwt.getClaim("userId");
+        Task updateTask = this.updateTask.execute(
                 new Task(
                         dto.id(),
                         dto.title(),
@@ -139,6 +144,7 @@ public class TaskController {
                 ),
                 currentUserId
         );
+        return new TaskDTO(updateTask);
     }
 
     @Operation(summary = "Delete a task", description = "Deletes a task from the system by its unique identifier.")

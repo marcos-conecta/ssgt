@@ -3,6 +3,7 @@ package br.com.oxy.ssgt.application.taskcases;
 import br.com.oxy.ssgt.application.gateways.ProjectRepositoryApplication;
 import br.com.oxy.ssgt.application.gateways.TaskRepositoryApplication;
 import br.com.oxy.ssgt.domain.entities.task.Task;
+import br.com.oxy.ssgt.infra.execption.BusinessException;
 import br.com.oxy.ssgt.infra.persistence.task.TaskPriority;
 import br.com.oxy.ssgt.infra.persistence.task.TaskStatus;
 
@@ -16,8 +17,12 @@ public class UpdateTask {
         this.projectRepository = projectRepository;
     }
 
-    public Task updateTask(Task newTask, Long currentUserId) {
+    public Task execute(Task newTask, Long currentUserId) {
         Task currentTask = repository.findById(newTask.getId());
+        Long projectId = newTask.getProject().getId();
+        Long assignedUserId = currentTask.getAssignedUser().getId();
+
+        validateUserIsProjectMember(projectId, assignedUserId);
 
         validateDoneCannotReturnToTodo(currentTask, newTask);
 
@@ -28,9 +33,15 @@ public class UpdateTask {
         return repository.updateTask(newTask);
     }
 
+    private void validateUserIsProjectMember(Long projectId, Long assignedUserId) {
+        if(!projectRepository.isMember(projectId, assignedUserId)) {
+            throw new BusinessException("User must be a member of the project to update tasks.");
+        }
+    }
+
     private void validateDoneCannotReturnToTodo(Task currentTask, Task newTask) {
         if (currentTask.getStatus() == TaskStatus.DONE && newTask.getStatus() == TaskStatus.TODO) {
-            throw new IllegalArgumentException("A task marked as DONE cannot be moved back to TODO.");
+            throw new BusinessException("A task marked as DONE cannot be moved back to TODO.");
         }
     }
 
@@ -40,7 +51,7 @@ public class UpdateTask {
 
             boolean isAdmin = projectRepository.isAdmin(projectId, currentUserId);
             if (!isAdmin) {
-                throw new IllegalArgumentException("Only project admins can mark a CRITICAL task as DONE.");
+                throw new BusinessException("Only project admins can mark a CRITICAL task as DONE.");
             }
         }
     }
@@ -54,7 +65,7 @@ public class UpdateTask {
 
             long totalInProgress = repository.countInProgressByAssigneeUserId(assignedUserId);
             if(totalInProgress >= 5) {
-                throw new IllegalArgumentException("The assigned user already has 5 tasks in progress. Please reassign the task or complete some of the in-progress tasks.");
+                throw new BusinessException("The assigned user already has 5 tasks in progress. Please reassign the task or complete some of the in-progress tasks.");
             }
         }
     }

@@ -17,4 +17,6 @@ public interface ProjectRepositoryApplication {
     Project updateProject(Project project);
 
     boolean isAdmin(Long projectId, Long userId);
+
+    boolean isMember(Long projectId, Long currentUserId);
 }

@@ -59,4 +59,9 @@ public class ProjectRepositoryJPA implements ProjectRepositoryApplication {
     public boolean isAdmin(Long projectId, Long userId) {
         return projectMemberRepository.existsByProject_IdAndUser_IdAndRole(projectId, userId, ProjectRole.ADMIN);
     }
+
+    @Override
+    public boolean isMember(Long projectId, Long currentUserId) {
+        return projectMemberRepository.existsByProject_IdAndUser_Id(projectId, currentUserId);
+    }
 }

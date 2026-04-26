@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
 public record ProjectDTO(
+        @Schema(description = "Project's unique identifier", example = "1")
         Long id,
         @Schema(description = "Project's name", example = "Projeto de Desenvolvimento de Software")
         String name,

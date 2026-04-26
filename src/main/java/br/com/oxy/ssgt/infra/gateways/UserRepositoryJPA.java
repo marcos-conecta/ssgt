@@ -3,6 +3,7 @@ package br.com.oxy.ssgt.infra.gateways;
 
 import br.com.oxy.ssgt.application.gateways.UserRepositoryApplication;
 import br.com.oxy.ssgt.domain.entities.user.User;
+import br.com.oxy.ssgt.infra.execption.NotFoundException;
 import br.com.oxy.ssgt.infra.persistence.user.UserEntity;
 import br.com.oxy.ssgt.infra.persistence.user.UserRepository;
 import org.springframework.data.domain.Page;
@@ -35,7 +36,7 @@ public class UserRepositoryJPA implements UserRepositoryApplication {
     public User findById(Long id) {
         return repository.findById(id)
                 .map(mapper::toDomain)
-                .orElse(null);
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
     }
 
     @Override
@@ -54,7 +55,7 @@ public class UserRepositoryJPA implements UserRepositoryApplication {
     @Override
     public User findByEmail(String email) {
         UserEntity entity = repository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found with email: "));
+                .orElseThrow(() -> new NotFoundException("User not found with email: "+ email));
         return mapper.toDomain(entity);
     }
 }
