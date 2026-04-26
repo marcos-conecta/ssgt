@@ -6,6 +6,8 @@ import br.com.oxy.ssgt.application.usecases.*;
 import br.com.oxy.ssgt.domain.entities.project.Project;
 import br.com.oxy.ssgt.domain.entities.task.Task;
 import br.com.oxy.ssgt.domain.entities.user.User;
+import br.com.oxy.ssgt.infra.persistence.task.TaskPriority;
+import br.com.oxy.ssgt.infra.persistence.task.TaskStatus;
 import br.com.oxy.ssgt.infra.security.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -16,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 
 @RestController
@@ -103,23 +107,19 @@ public class TaskController {
         );
     }
 
-    @Operation(summary = "Get all tasks", description = "Retrieves a paginated list of all tasks in the system.")
+    @Operation(summary = "Get all tasks with optional filters", description = "Retrieves a paginated list of tasks with optional filtering by status, priority, assigned user, and date range.")
     @GetMapping
-    public Page <TaskDTO> getAllTaskDTOS(@ParameterObject Pageable pageable) {
-        return listTasks.getAllTasks(pageable)
-                .map(task ->
-                        new TaskDTO(
-                                task.getId(),
-                                task.getTitle(),
-                                task.getDescription(),
-                                task.getStatus(),
-                                task.getPriority(),
-                                task.getCreatedAt(),
-                                task.getUpdatedAt(),
-                                task.getDeadline(),
-                                task.getProject().getId(),
-                                task.getAssignedUser().getId())
-                );
+    public Page <TaskDTO> getAllTaskDTOS(
+            @RequestParam(required = false) TaskStatus taskStatus,
+            @RequestParam(required = false) TaskPriority taskPriority,
+            @RequestParam(required = false) Long assignedUserId,
+            @RequestParam(required = false) LocalDateTime startDate,
+            @RequestParam(required = false) LocalDateTime endDate,
+            @ParameterObject Pageable pageable) {
+
+        return listTasks.getAllTasks(taskStatus, taskPriority, assignedUserId, startDate, endDate, pageable)
+                .map(TaskDTO::new);
+
     }
 
     @Operation(summary = "Update an existing task", description = "Updates the details of an existing task in the system.")
@@ -176,19 +176,6 @@ public class TaskController {
                 : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        return listTaskByProject.execute(projectId, pageable).map(task ->
-                new TaskDTO(
-                        task.getId(),
-                        task.getTitle(),
-                        task.getDescription(),
-                        task.getStatus(),
-                        task.getPriority(),
-                        task.getCreatedAt(),
-                        task.getUpdatedAt(),
-                        task.getDeadline(),
-                        task.getProject().getId(),
-                        task.getAssignedUser().getId()
-                )
-        );
+        return listTaskByProject.execute(projectId, pageable).map(TaskDTO::new);
     }
 }

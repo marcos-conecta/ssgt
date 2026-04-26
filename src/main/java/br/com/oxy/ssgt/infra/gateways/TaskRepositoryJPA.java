@@ -5,10 +5,15 @@ import br.com.oxy.ssgt.application.gateways.TaskRepositoryApplication;
 import br.com.oxy.ssgt.domain.entities.task.Task;
 import br.com.oxy.ssgt.infra.execption.NotFoundException;
 import br.com.oxy.ssgt.infra.persistence.task.TaskEntity;
+import br.com.oxy.ssgt.infra.persistence.task.TaskPriority;
 import br.com.oxy.ssgt.infra.persistence.task.TaskRepository;
 import br.com.oxy.ssgt.infra.persistence.task.TaskStatus;
+import br.com.oxy.ssgt.infra.persistence.task.specification.TaskSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+
+import java.time.LocalDateTime;
 
 public class TaskRepositoryJPA implements TaskRepositoryApplication {
 
@@ -79,4 +84,19 @@ public class TaskRepositoryJPA implements TaskRepositoryApplication {
     public long countInProgressByAssigneeUserId(Long assignedUserId) {
         return repository.countByAssignedUser_IdAndStatus(assignedUserId, TaskStatus.IN_PROGRESS);
     }
+
+    @Override
+    public Page<Task> findAllByCriteria(TaskStatus status, TaskPriority priority, Long assignedUserId, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
+
+        Specification<TaskEntity> specification = Specification.allOf(
+                TaskSpecification.hasStatus(status),
+                TaskSpecification.hasPriority(priority),
+                TaskSpecification.hasAssignedUserId(assignedUserId),
+                TaskSpecification.createdAtBetween(startDate, endDate)
+        );
+
+        return repository.findAll(specification, pageable)
+                .map(mapper::toDomain);
+    }
+
 }
