@@ -4,6 +4,7 @@ package br.com.oxy.ssgt.infra.gateways;
 
 import br.com.oxy.ssgt.application.gateways.ProjectRepositoryApplication;
 import br.com.oxy.ssgt.domain.entities.project.Project;
+import br.com.oxy.ssgt.infra.execption.NotFoundException;
 import br.com.oxy.ssgt.infra.persistence.project.ProjectEntity;
 import br.com.oxy.ssgt.infra.persistence.project.ProjectMemberRepository;
 import br.com.oxy.ssgt.infra.persistence.project.ProjectRepository;
@@ -39,7 +40,7 @@ public class ProjectRepositoryJPA implements ProjectRepositoryApplication {
     public Project findById(Long id) {
         return repository.findById(id)
                 .map(mapper::toDomain)
-                .orElse(null);
+                .orElseThrow(() -> new NotFoundException("Project not found with id: " + id));
     }
 
     @Override

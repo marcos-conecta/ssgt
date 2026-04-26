@@ -33,25 +33,21 @@ public class UserController {
         User user =  createUser.registerUser(
                 new User(null, dto.name(), dto.email(), dto.password())
         );
-        return new UserDTO(
-                user.getId(),
-                user.getName(),
-                user.getEmail()
-        );
+        return new UserDTO(user);
     }
 
     @Operation(summary = "Get user by ID", description = "Retrieves a user by their unique ID.")
     @GetMapping("/{id}")
     public UserDTO getUserById(@PathVariable Long id) {
         User user = findUserById.findById(id);
-        return new UserDTO(user.getId(), user.getName(), user.getEmail());
+        return new UserDTO(user);
     }
 
     @Operation(summary = "Get all users", description = "Retrieves a paginated list of all users in the system.")
     @GetMapping
     public Page <UserDTO> getAllUserDTOS(@ParameterObject Pageable pageable) {
         return listUsers.getAllUsers(pageable)
-                .map(user -> new UserDTO(user.getId(), user.getName(), user.getEmail()));
+                .map(UserDTO::new);
     }
 
     @Operation(summary = "Update user", description = "Updates the details of an existing user.")
@@ -59,7 +55,7 @@ public class UserController {
     public UserDTO updateUser(@RequestBody @Valid UpdateUserDTO dto) {
         User update = updateUser.updateUser(new User(dto.id(), dto.name(), dto.email(), dto.password()));
 
-        return new UserDTO(update.getId(), update.getName(), update.getEmail());
+        return new UserDTO(update);
     }
 
     @Operation(summary = "Delete user", description = "Deletes a user from the system by their unique ID.")

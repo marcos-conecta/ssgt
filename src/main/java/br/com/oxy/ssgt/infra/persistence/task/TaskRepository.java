@@ -7,5 +7,10 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface TaskRepository extends JpaRepository<TaskEntity, Long>, JpaSpecificationExecutor <TaskEntity> {
     Page<TaskEntity> findByProjectId(Long projectId, Pageable pageable);
+
     long countByAssignedUser_IdAndStatus(Long assignedUserId, TaskStatus status);
+
+    long countByProject_IdAndStatus(Long projectId, TaskStatus status);
+
+    long countByProject_IdAndPriority(Long projectId, TaskPriority priority);
 }

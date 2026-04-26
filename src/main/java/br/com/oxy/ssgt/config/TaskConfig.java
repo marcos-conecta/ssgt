@@ -49,4 +49,9 @@ public class TaskConfig {
         return new TaskEntityMapper(projectEntityMapper, userEntityMapper);
     }
 
+    @Bean
+    GetProjectTaskSummary getProjectTaskSummary(TaskRepositoryApplication repository) {
+        return new GetProjectTaskSummary(repository);
+    }
+
 }

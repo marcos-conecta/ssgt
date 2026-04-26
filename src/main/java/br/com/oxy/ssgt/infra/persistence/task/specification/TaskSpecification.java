@@ -47,4 +47,26 @@ public class TaskSpecification {
             return criteriaBuilder.lessThanOrEqualTo(root.get("createdAt"), endDate);
         };
     }
+
+    public static Specification<TaskEntity> hasTextLike(String text) {
+        return (root, query, criteriaBuilder) -> {
+            if (text == null || text.isEmpty()) {
+                return null;
+            }
+
+            String likeText = "%" + text.toLowerCase() + "%";
+
+            return criteriaBuilder.or(
+                    criteriaBuilder.like(
+                            criteriaBuilder.lower(root.get("title")),
+                            likeText
+                    ),
+                    criteriaBuilder.like(
+                            criteriaBuilder.lower(root.get("description"))
+                            , likeText
+                    )
+            );
+        };
+    }
 }
+

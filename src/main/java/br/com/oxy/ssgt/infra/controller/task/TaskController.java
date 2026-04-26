@@ -76,48 +76,37 @@ public class TaskController {
                         assignedUser)
         );
 
-        return new TaskDTO(
-                task.getId(),
-                task.getTitle(),
-                task.getDescription(),
-                task.getStatus(),
-                task.getPriority(),
-                task.getCreatedAt(),
-                task.getUpdatedAt(),
-                task.getDeadline(),
-                task.getProject().getId(),
-                task.getAssignedUser().getId()
-        );
+        return new TaskDTO(task);
     }
 
     @Operation(summary = "Get task by ID", description = "Retrieves a task by its unique identifier.")
     @GetMapping("/{id}")
     public TaskDTO getTaskById(@PathVariable Long id) {
         Task task = findTaskById.findById(id);
-        return new TaskDTO(task.getId(),
-                task.getTitle(),
-                task.getDescription(),
-                task.getStatus(),
-                task.getPriority(),
-                task.getCreatedAt(),
-                task.getUpdatedAt(),
-                task.getDeadline(),
-                task.getProject().getId(),
-                task.getAssignedUser().getId()
-        );
+        return new TaskDTO(task);
     }
 
     @Operation(summary = "Get all tasks with optional filters", description = "Retrieves a paginated list of tasks with optional filtering by status, priority, assigned user, and date range.")
     @GetMapping
     public Page <TaskDTO> getAllTaskDTOS(
+            @RequestParam(required = false) String text,
             @RequestParam(required = false) TaskStatus taskStatus,
             @RequestParam(required = false) TaskPriority taskPriority,
             @RequestParam(required = false) Long assignedUserId,
             @RequestParam(required = false) LocalDateTime startDate,
             @RequestParam(required = false) LocalDateTime endDate,
-            @ParameterObject Pageable pageable) {
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
+    ) {
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
 
-        return listTasks.getAllTasks(taskStatus, taskPriority, assignedUserId, startDate, endDate, pageable)
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return listTasks.getAllTasks(text, taskStatus, taskPriority, assignedUserId, startDate, endDate, pageable)
                 .map(TaskDTO::new);
 
     }
@@ -142,18 +131,7 @@ public class TaskController {
                 ),
                 currentUserId
         );
-        return new TaskDTO(
-                updateTask.getId(),
-                updateTask.getTitle(),
-                updateTask.getDescription(),
-                updateTask.getStatus(),
-                updateTask.getPriority(),
-                updateTask.getCreatedAt(),
-                updateTask.getUpdatedAt(),
-                updateTask.getDeadline(),
-                updateTask.getProject().getId(),
-                updateTask.getAssignedUser().getId()
-        );
+        return new TaskDTO(updateTask);
     }
 
     @Operation(summary = "Delete a task", description = "Deletes a task from the system by its unique identifier.")
@@ -171,9 +149,10 @@ public class TaskController {
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String direction
     ) {
-        Sort sort = direction.equalsIgnoreCase("desc")
-                ? Sort.by(sortBy).descending()
-                : Sort.by(sortBy).ascending();
+        Sort sort = direction.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
         Pageable pageable = PageRequest.of(page, size, sort);
 
         return listTaskByProject.execute(projectId, pageable).map(TaskDTO::new);

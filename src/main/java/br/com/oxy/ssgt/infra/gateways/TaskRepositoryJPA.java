@@ -14,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
+import java.util.EnumMap;
+import java.util.Map;
 
 public class TaskRepositoryJPA implements TaskRepositoryApplication {
 
@@ -86,9 +88,17 @@ public class TaskRepositoryJPA implements TaskRepositoryApplication {
     }
 
     @Override
-    public Page<Task> findAllByCriteria(TaskStatus status, TaskPriority priority, Long assignedUserId, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
+    public Page<Task> findAllByCriteria(String text,
+                                        TaskStatus status,
+                                        TaskPriority priority,
+                                        Long assignedUserId,
+                                        LocalDateTime startDate,
+                                        LocalDateTime endDate,
+                                        Pageable pageable)
+    {
 
         Specification<TaskEntity> specification = Specification.allOf(
+                TaskSpecification.hasTextLike(text),
                 TaskSpecification.hasStatus(status),
                 TaskSpecification.hasPriority(priority),
                 TaskSpecification.hasAssignedUserId(assignedUserId),
@@ -97,6 +107,33 @@ public class TaskRepositoryJPA implements TaskRepositoryApplication {
 
         return repository.findAll(specification, pageable)
                 .map(mapper::toDomain);
+    }
+
+    @Override
+    public Map<TaskStatus, Long> countByStatusForProject(Long projectId) {
+        Map<TaskStatus, Long> counts = new EnumMap<>(TaskStatus.class);
+
+        for (TaskStatus status : TaskStatus.values()) {
+           counts.put(
+                status,
+                repository.countByProject_IdAndStatus(projectId, status)
+            );
+        }
+        return counts;
+
+    }
+
+    @Override
+    public Map<TaskPriority, Long> countByPriorityForProject(Long projectId) {
+        Map<TaskPriority, Long> counts = new EnumMap<>(TaskPriority.class);
+
+        for (TaskPriority priority : TaskPriority.values()) {
+            counts.put(
+                    priority,
+                    repository.countByProject_IdAndPriority(projectId, priority)
+            );
+        }
+        return counts;
     }
 
 }
