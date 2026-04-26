@@ -40,8 +40,8 @@ public class TaskConfig {
     }
 
     @Bean
-    TaskRepositoryJPA createTaskRepositoryJPA(TaskRepository repository, TaskEntityMapper mapper) {
-        return new TaskRepositoryJPA(repository, mapper);
+    TaskRepositoryJPA createTaskRepositoryJPA(TaskRepository repository, TaskEntityMapper mapper, ProjectEntityMapper projectMapper, UserEntityMapper userMapper) {
+        return new TaskRepositoryJPA(repository, mapper, projectMapper, userMapper);
     }
 
     @Bean

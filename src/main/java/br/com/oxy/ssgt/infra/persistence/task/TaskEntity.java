@@ -40,14 +40,12 @@ public class TaskEntity {
 
     public TaskEntity() {}
 
-    public TaskEntity(Long id, String title, String description, TaskStatus status, TaskPriority priority, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deadline, ProjectEntity project, UserEntity assignedUser) {
+    public TaskEntity(Long id, String title, String description, TaskStatus status, TaskPriority priority, LocalDateTime deadline, ProjectEntity project, UserEntity assignedUser) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.status = status;
         this.priority = priority;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
         this.deadline = deadline;
         this.project = project;
         this.assignedUser = assignedUser;

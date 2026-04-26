@@ -29,14 +29,12 @@ public class Task {
 
     private User assignedUser;
 
-    public Task(Long id, String title, String description, TaskStatus status, TaskPriority priority, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deadline, Project project, User assignedUser) {
+    public Task(Long id, String title, String description, TaskStatus status, TaskPriority priority, LocalDateTime deadline, Project project, User assignedUser) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.status = status;
         this.priority = priority;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
         this.deadline = deadline;
         this.project = project;
         this.assignedUser = assignedUser;

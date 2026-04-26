@@ -6,6 +6,7 @@ import br.com.oxy.ssgt.application.usecases.*;
 import br.com.oxy.ssgt.domain.entities.project.Project;
 import br.com.oxy.ssgt.domain.entities.task.Task;
 import br.com.oxy.ssgt.domain.entities.user.User;
+import br.com.oxy.ssgt.infra.security.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springdoc.core.annotations.ParameterObject;
@@ -14,7 +15,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -30,6 +30,7 @@ public class TaskController {
     private final FindProjectById findProjectById;
     private final FindUserById findUserById;
     private final ListTasksByProject listTaskByProject;
+    private final SecurityUtils securityUtils;
 
     public TaskController(
             CreateTask createTask,
@@ -39,7 +40,9 @@ public class TaskController {
             DeleteTask deleteTask,
             FindProjectById findProjectById,
             FindUserById findUserById,
-            ListTasksByProject listTaskByProject)
+            ListTasksByProject listTaskByProject,
+            SecurityUtils securityUtils
+    )
     {
         this.createTask = createTask;
         this.listTasks = listTasks;
@@ -49,11 +52,12 @@ public class TaskController {
         this.findProjectById = findProjectById;
         this.findUserById = findUserById;
         this.listTaskByProject = listTaskByProject;
+        this.securityUtils = securityUtils;
     }
 
     @Operation(summary = "Create a new task", description = "Registers a new task in the system.")
     @PostMapping
-    public TaskDTO createTask(@RequestBody TaskDTO dto) {
+    public TaskDTO createTask(@RequestBody @Valid CreateTaskDTO dto) {
         Project project = findProjectById.findById(dto.projectId());
         User assignedUser = findUserById.findById(dto.assignedUserId());
         Task task =  createTask.registerTask(
@@ -61,10 +65,8 @@ public class TaskController {
                         null,
                         dto.title(),
                         dto.description(),
-                        dto.status(),
+                        null,
                         dto.priority(),
-                        dto.createdAt(),
-                        dto.updatedAt(),
                         dto.deadline(),
                         project,
                         assignedUser)
@@ -122,13 +124,11 @@ public class TaskController {
 
     @Operation(summary = "Update an existing task", description = "Updates the details of an existing task in the system.")
     @PutMapping
-    public TaskDTO updateTask(@RequestBody @Valid TaskDTO dto, Authentication authentication) {
-        Task task = findTaskById.findById(dto.id());
+    public TaskDTO updateTask(@RequestBody @Valid UpdateTaskDTO dto, Authentication authentication) {
         Project project = findProjectById.findById(dto.projectId());
         User assignedUser = findUserById.findById(dto.assignedUserId());
 
-        Jwt jwt = (Jwt) authentication.getPrincipal();
-        Long currentUserId = jwt.getClaim("userId");
+        Long currentUserId = securityUtils.getCurrentUserId(authentication);
         Task updateTask = this.updateTask.execute(
                 new Task(
                         dto.id(),
@@ -136,15 +136,24 @@ public class TaskController {
                         dto.description(),
                         dto.status(),
                         dto.priority(),
-                        task.getCreatedAt(),
-                        dto.updatedAt(),
                         dto.deadline(),
                         project,
                         assignedUser
                 ),
                 currentUserId
         );
-        return new TaskDTO(updateTask);
+        return new TaskDTO(
+                updateTask.getId(),
+                updateTask.getTitle(),
+                updateTask.getDescription(),
+                updateTask.getStatus(),
+                updateTask.getPriority(),
+                updateTask.getCreatedAt(),
+                updateTask.getUpdatedAt(),
+                updateTask.getDeadline(),
+                updateTask.getProject().getId(),
+                updateTask.getAssignedUser().getId()
+        );
     }
 
     @Operation(summary = "Delete a task", description = "Deletes a task from the system by its unique identifier.")
@@ -167,6 +176,19 @@ public class TaskController {
                 : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        return listTaskByProject.execute(projectId, pageable).map(TaskDTO::new);
+        return listTaskByProject.execute(projectId, pageable).map(task ->
+                new TaskDTO(
+                        task.getId(),
+                        task.getTitle(),
+                        task.getDescription(),
+                        task.getStatus(),
+                        task.getPriority(),
+                        task.getCreatedAt(),
+                        task.getUpdatedAt(),
+                        task.getDeadline(),
+                        task.getProject().getId(),
+                        task.getAssignedUser().getId()
+                )
+        );
     }
 }

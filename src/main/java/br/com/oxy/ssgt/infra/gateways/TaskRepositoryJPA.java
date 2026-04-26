@@ -3,6 +3,7 @@ package br.com.oxy.ssgt.infra.gateways;
 
 import br.com.oxy.ssgt.application.gateways.TaskRepositoryApplication;
 import br.com.oxy.ssgt.domain.entities.task.Task;
+import br.com.oxy.ssgt.infra.execption.NotFoundException;
 import br.com.oxy.ssgt.infra.persistence.task.TaskEntity;
 import br.com.oxy.ssgt.infra.persistence.task.TaskRepository;
 import br.com.oxy.ssgt.infra.persistence.task.TaskStatus;
@@ -13,17 +14,21 @@ public class TaskRepositoryJPA implements TaskRepositoryApplication {
 
     private final TaskRepository repository;
     private final TaskEntityMapper mapper;
+    private final ProjectEntityMapper projectMapper;
+    private final UserEntityMapper userMapper;
 
-    public TaskRepositoryJPA(TaskRepository repository, TaskEntityMapper mapper) {
+    public TaskRepositoryJPA(TaskRepository repository, TaskEntityMapper mapper, ProjectEntityMapper projectMapper, UserEntityMapper userMapper) {
         this.repository = repository;
         this.mapper = mapper;
+        this.projectMapper = projectMapper;
+        this.userMapper = userMapper;
     }
 
     @Override
     public Task registerTask(Task task) {
         TaskEntity entity = mapper.toEntity(task);
-        repository.save(entity);
-        return mapper.toDomain(entity);
+        TaskEntity saved = repository.save(entity);
+        return mapper.toDomain(saved);
     }
 
     @Override
@@ -36,7 +41,7 @@ public class TaskRepositoryJPA implements TaskRepositoryApplication {
     public Task findById(Long id) {
         return repository.findById(id)
                 .map(mapper::toDomain)
-                .orElse(null);
+                .orElseThrow(() -> new NotFoundException("Task not found with id: " + id));
     }
 
     @Override
@@ -47,9 +52,21 @@ public class TaskRepositoryJPA implements TaskRepositoryApplication {
 
     @Override
     public Task updateTask(Task task) {
-        TaskEntity entity = mapper.toEntity(task);
-        repository.save(entity);
-        return mapper.toDomain(entity);
+        TaskEntity entity = repository.findById(task.getId())
+                .orElseThrow(() -> new NotFoundException("Task not found with id: " + task.getId()));
+
+        entity.setId(task.getId());
+        entity.setTitle(task.getTitle());
+        entity.setDescription(task.getDescription());
+        entity.setStatus(task.getStatus());
+        entity.setPriority(task.getPriority());
+        entity.setDeadline(task.getDeadline());
+        entity.setProject(projectMapper.toEntity(task.getProject()));
+        entity.setAssignedUser(userMapper.toEntity(task.getAssignedUser()));
+
+        TaskEntity updated = repository.save(entity);
+
+        return mapper.toDomain(updated);
     }
 
     @Override

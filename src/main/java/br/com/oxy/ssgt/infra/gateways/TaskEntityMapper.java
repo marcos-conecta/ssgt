@@ -12,31 +12,37 @@ public class TaskEntityMapper {
         this.userMapper = userMapper;
     }
     public TaskEntity toEntity(Task task){
-        return new TaskEntity(
+
+        TaskEntity taskEntity = new TaskEntity(
                 task.getId(),
                 task.getTitle(),
                 task.getDescription(),
                 task.getStatus(),
                 task.getPriority(),
-                task.getCreatedAt(),
-                task.getUpdatedAt(),
                 task.getDeadline(),
                 projectMapper.toEntity(task.getProject()),
-                userMapper.toEntity(task.getAssignedUser()));
+                userMapper.toEntity(task.getAssignedUser())
+        );
+        taskEntity.setCreatedAt(task.getCreatedAt());
+        taskEntity.setUpdatedAt(task.getUpdatedAt());
+
+        return taskEntity;
     }
 
     public Task toDomain(TaskEntity taskEntity){
-        return new Task(
-                taskEntity.getId(),
-                taskEntity.getTitle(),
-                taskEntity.getDescription(),
-                taskEntity.getStatus(),
-                taskEntity.getPriority(),
-                taskEntity.getCreatedAt(),
-                taskEntity.getUpdatedAt(),
-                taskEntity.getDeadline(),
-                projectMapper.toDomain(taskEntity.getProject()),
-                userMapper.toDomain(taskEntity.getAssignedUser())
+        Task task = new Task(
+            taskEntity.getId(),
+            taskEntity.getTitle(),
+            taskEntity.getDescription(),
+            taskEntity.getStatus(),
+            taskEntity.getPriority(),
+            taskEntity.getDeadline(),
+            projectMapper.toDomain(taskEntity.getProject()),
+            userMapper.toDomain(taskEntity.getAssignedUser())
         );
+        task.setCreatedAt(taskEntity.getCreatedAt());
+        task.setUpdatedAt(taskEntity.getUpdatedAt());
+
+        return task;
     }
 }

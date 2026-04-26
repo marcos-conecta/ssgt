@@ -29,15 +29,14 @@ public class UserController {
 
     @Operation(summary = "Create a new user", description = "Registers a new user in the system.")
     @PostMapping
-    public UserDTO createUser(@RequestBody UserDTO dto) {
+    public UserDTO createUser(@RequestBody @Valid CreateUserDTO dto) {
         User user =  createUser.registerUser(
                 new User(null, dto.name(), dto.email(), dto.password())
         );
         return new UserDTO(
                 user.getId(),
                 user.getName(),
-                user.getEmail(),
-                user.getPassword()
+                user.getEmail()
         );
     }
 
@@ -45,21 +44,22 @@ public class UserController {
     @GetMapping("/{id}")
     public UserDTO getUserById(@PathVariable Long id) {
         User user = findUserById.findById(id);
-        return new UserDTO(user.getId(), user.getName(), user.getEmail(), user.getPassword());
+        return new UserDTO(user.getId(), user.getName(), user.getEmail());
     }
 
     @Operation(summary = "Get all users", description = "Retrieves a paginated list of all users in the system.")
     @GetMapping
     public Page <UserDTO> getAllUserDTOS(@ParameterObject Pageable pageable) {
         return listUsers.getAllUsers(pageable)
-                .map(user -> new UserDTO(user.getId(), user.getName(), user.getEmail(), user.getPassword()));
+                .map(user -> new UserDTO(user.getId(), user.getName(), user.getEmail()));
     }
 
     @Operation(summary = "Update user", description = "Updates the details of an existing user.")
     @PutMapping
-    public void updateUser(@RequestBody @Valid UserDTO dto) {
-        User user = findUserById.findById(dto.id());
+    public UserDTO updateUser(@RequestBody @Valid UpdateUserDTO dto) {
         User update = updateUser.updateUser(new User(dto.id(), dto.name(), dto.email(), dto.password()));
+
+        return new UserDTO(update.getId(), update.getName(), update.getEmail());
     }
 
     @Operation(summary = "Delete user", description = "Deletes a user from the system by their unique ID.")

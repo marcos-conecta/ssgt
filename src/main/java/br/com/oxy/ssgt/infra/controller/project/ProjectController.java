@@ -1,10 +1,10 @@
 package br.com.oxy.ssgt.infra.controller.project;
 
 import br.com.oxy.ssgt.application.projectcases.*;
-import br.com.oxy.ssgt.application.taskcases.ListTasksByProject;
 import br.com.oxy.ssgt.application.usecases.FindUserById;
 import br.com.oxy.ssgt.domain.entities.project.Project;
 import br.com.oxy.ssgt.domain.entities.user.User;
+import br.com.oxy.ssgt.infra.security.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springdoc.core.annotations.ParameterObject;
@@ -27,6 +27,7 @@ public class ProjectController {
     private final UpdateProject updateProject;
     private final DeleteProject deleteProject;
     private final FindUserById findUserById;
+    private final SecurityUtils securityUtils;
 
     public ProjectController(
             CreateProject createProject,
@@ -34,7 +35,8 @@ public class ProjectController {
             FindProjectById findProjectById,
             UpdateProject updateProject,
             DeleteProject deleteProject,
-            FindUserById findUserById
+            FindUserById findUserById,
+            SecurityUtils securityUtils
     )
     {
         this.createProject = createProject;
@@ -43,12 +45,13 @@ public class ProjectController {
         this.updateProject = updateProject;
         this.deleteProject = deleteProject;
         this.findUserById = findUserById;
+        this.securityUtils = securityUtils;
 
     }
 
     @Operation(summary = "Create a new project", description = "Registers a new project in the system.")
     @PostMapping
-    public ProjectDTO createProject(@RequestBody ProjectDTO dto) {
+    public ProjectDTO createProject(@RequestBody @Valid CreateProjectDTO dto) {
         User owner = findUserById.findById(dto.ownerId());
 
         List<User> members = dto.members()
@@ -110,8 +113,8 @@ public class ProjectController {
     public ProjectDTO updateProject(@RequestBody @Valid ProjectDTO dto, Authentication authentication) {
         User owner = findUserById.findById(dto.ownerId());
 
-        Jwt jwt = (Jwt) authentication.getPrincipal();
-        Long currentUserId = jwt.getClaim("userId");
+
+        Long currentUserId = securityUtils.getCurrentUserId(authentication);
 
         List<User> members = dto.members()
                 .stream()
@@ -128,7 +131,15 @@ public class ProjectController {
 
         Project projectUpdate = updateProject.updateProject(currentUserId, project);
 
-        return new ProjectDTO(projectUpdate);
+        return new ProjectDTO(
+                projectUpdate.getId(),
+                projectUpdate.getName(),
+                projectUpdate.getDescription(),
+                projectUpdate.getOwner().getId(),
+                projectUpdate.getMembers()
+                        .stream()
+                        .map(User::getId).toList()
+        );
     }
 
     @Operation(summary = "Delete project", description = "Deletes a project from the system by its unique ID.")
