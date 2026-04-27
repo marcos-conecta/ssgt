@@ -3,6 +3,7 @@ package br.com.oxy.ssgt.infra.gateways;
 
 import br.com.oxy.ssgt.application.gateways.UserRepositoryApplication;
 import br.com.oxy.ssgt.domain.entities.user.User;
+import br.com.oxy.ssgt.infra.execption.BusinessException;
 import br.com.oxy.ssgt.infra.execption.NotFoundException;
 import br.com.oxy.ssgt.infra.persistence.user.UserEntity;
 import br.com.oxy.ssgt.infra.persistence.user.UserRepository;
@@ -57,5 +58,10 @@ public class UserRepositoryJPA implements UserRepositoryApplication {
         UserEntity entity = repository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("User not found with email: "+ email));
         return mapper.toDomain(entity);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return repository.existsByEmail(email);
     }
 }

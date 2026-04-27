@@ -17,4 +17,6 @@ public interface UserRepositoryApplication {
     User updateUser(User user);
 
     User findByEmail(String email);
+
+    boolean existsByEmail(String email);
 }

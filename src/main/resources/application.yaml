@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/ssgt
+    url: jdbc:postgresql://db:5432/ssgt
     username: postgres
     password: root
     driver-class-name: org.postgresql.Driver
@@ -14,7 +14,7 @@ spring:
         format_sql: true
 
 hibernate:
-  dialect: org.hibernate.dialect.HSQLDialect
+  dialect: org.hibernate.dialect.PostgreSQLDialect
 
 jwt:
   secret: ${JWT_SECRET:9fK7xP2mQ8vL1sNc4TzR6wHy3BdEa7JuX5kMn0CpVg}
