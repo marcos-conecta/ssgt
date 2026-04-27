@@ -1,4 +1,4 @@
-package br.com.oxy.ssgt.application.taskcases;
+package br.com.oxy.ssgt.application.usecases.task;
 
 import br.com.oxy.ssgt.application.gateways.ProjectRepositoryApplication;
 import br.com.oxy.ssgt.application.gateways.TaskRepositoryApplication;
@@ -26,7 +26,7 @@ public class UpdateTask {
 
         validateDoneCannotReturnToTodo(currentTask, newTask);
 
-        validateCriticalOnlyAdminCanClose(currentTask, currentUserId);
+        validateCriticalOnlyAdminCanClose(currentTask, newTask, currentUserId);
 
         validateWipLimit(currentTask, newTask);
 
@@ -45,9 +45,10 @@ public class UpdateTask {
         }
     }
 
-    private void validateCriticalOnlyAdminCanClose(Task newTask, Long currentUserId) {
+    private void validateCriticalOnlyAdminCanClose(Task currentTask, Task newTask, Long currentUserId) {
+        Long projectId = newTask.getProject().getId();
+
         if (newTask.getPriority() == TaskPriority.CRITICAL && newTask.getStatus() == TaskStatus.DONE) {
-            Long projectId = newTask.getProject().getId();
 
             boolean isAdmin = projectRepository.isAdmin(projectId, currentUserId);
             if (!isAdmin) {

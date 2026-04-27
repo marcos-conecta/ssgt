@@ -1,6 +1,6 @@
 package br.com.oxy.ssgt.infra.controller.user;
 
-import br.com.oxy.ssgt.application.usecases.*;
+import br.com.oxy.ssgt.application.usecases.user.*;
 import br.com.oxy.ssgt.domain.entities.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;

@@ -1,7 +1,7 @@
 package br.com.oxy.ssgt.config;
 
 import br.com.oxy.ssgt.application.gateways.UserRepositoryApplication;
-import br.com.oxy.ssgt.application.usecases.*;
+import br.com.oxy.ssgt.application.usecases.user.*;
 import br.com.oxy.ssgt.infra.gateways.UserEntityMapper;
 import br.com.oxy.ssgt.infra.gateways.UserRepositoryJPA;
 import br.com.oxy.ssgt.infra.persistence.user.UserRepository;

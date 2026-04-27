@@ -1,4 +1,4 @@
-package br.com.oxy.ssgt.application.taskcases;
+package br.com.oxy.ssgt.application.usecases.task;
 
 import br.com.oxy.ssgt.application.gateways.TaskRepositoryApplication;
 import br.com.oxy.ssgt.domain.entities.task.Task;

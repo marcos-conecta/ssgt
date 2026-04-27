@@ -1,4 +1,4 @@
-package br.com.oxy.ssgt.application.projectcases;
+package br.com.oxy.ssgt.application.usecases.project;
 
 import br.com.oxy.ssgt.application.gateways.ProjectRepositoryApplication;
 import br.com.oxy.ssgt.domain.entities.project.Project;

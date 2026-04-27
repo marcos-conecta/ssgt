@@ -1,8 +1,8 @@
 package br.com.oxy.ssgt.infra.controller.task;
 
-import br.com.oxy.ssgt.application.projectcases.FindProjectById;
-import br.com.oxy.ssgt.application.taskcases.*;
-import br.com.oxy.ssgt.application.usecases.*;
+import br.com.oxy.ssgt.application.usecases.project.FindProjectById;
+import br.com.oxy.ssgt.application.usecases.task.*;
+import br.com.oxy.ssgt.application.usecases.user.FindUserById;
 import br.com.oxy.ssgt.domain.entities.project.Project;
 import br.com.oxy.ssgt.domain.entities.task.Task;
 import br.com.oxy.ssgt.domain.entities.user.User;

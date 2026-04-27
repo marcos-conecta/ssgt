@@ -2,8 +2,8 @@ package br.com.oxy.ssgt.config;
 
 import br.com.oxy.ssgt.application.gateways.ProjectRepositoryApplication;
 import br.com.oxy.ssgt.application.gateways.TaskRepositoryApplication;
-import br.com.oxy.ssgt.application.projectcases.*;
-import br.com.oxy.ssgt.application.taskcases.ListTasksByProject;
+import br.com.oxy.ssgt.application.usecases.project.*;
+import br.com.oxy.ssgt.application.usecases.task.ListTasksByProject;
 import br.com.oxy.ssgt.infra.gateways.ProjectEntityMapper;
 import br.com.oxy.ssgt.infra.gateways.ProjectRepositoryJPA;
 import br.com.oxy.ssgt.infra.gateways.UserEntityMapper;

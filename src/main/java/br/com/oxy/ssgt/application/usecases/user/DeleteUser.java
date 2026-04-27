@@ -1,4 +1,4 @@
-package br.com.oxy.ssgt.application.usecases;
+package br.com.oxy.ssgt.application.usecases.user;
 
 import br.com.oxy.ssgt.application.gateways.UserRepositoryApplication;
 

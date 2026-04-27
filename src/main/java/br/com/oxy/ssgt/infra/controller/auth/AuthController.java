@@ -1,8 +1,7 @@
 package br.com.oxy.ssgt.infra.controller.auth;
 
-import br.com.oxy.ssgt.application.usecases.FindUserByEmail;
+import br.com.oxy.ssgt.application.usecases.user.FindUserByEmail;
 import br.com.oxy.ssgt.domain.entities.user.User;
-import br.com.oxy.ssgt.infra.execption.NotFoundException;
 import br.com.oxy.ssgt.infra.execption.UnauthorizedException;
 import br.com.oxy.ssgt.infra.security.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
