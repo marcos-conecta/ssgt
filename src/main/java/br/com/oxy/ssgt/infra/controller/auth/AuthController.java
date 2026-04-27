@@ -6,6 +6,7 @@ import br.com.oxy.ssgt.infra.execption.NotFoundException;
 import br.com.oxy.ssgt.infra.execption.UnauthorizedException;
 import br.com.oxy.ssgt.infra.security.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,13 +29,13 @@ public class AuthController {
 
     @Operation(description = "Authenticate a user and return a JWT token")
     @PostMapping("/login")
-    public LoginResponseDTO login(@RequestBody LoginRequestDTO dto) {
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO dto) {
         User user = findUserByEmail.execute(dto.email());
 
         if(!passwordEncoder.matches(dto.password(), user.getPassword())) {
             throw new UnauthorizedException("Invalid credentials");
         }
         String token = tokenService.generateToken(user);
-        return new LoginResponseDTO(token);
+        return ResponseEntity.ok(new LoginResponseDTO(token));
     }
 }

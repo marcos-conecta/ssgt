@@ -7,7 +7,10 @@ import jakarta.validation.Valid;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 
 @RestController
@@ -29,38 +32,40 @@ public class UserController {
 
     @Operation(summary = "Create a new user", description = "Registers a new user in the system.")
     @PostMapping
-    public UserDTO createUser(@RequestBody @Valid CreateUserDTO dto) {
+    public ResponseEntity<UserDTO> createUser(@RequestBody @Valid CreateUserDTO dto) {
         User user =  createUser.registerUser(
                 new User(null, dto.name(), dto.email(), dto.password())
         );
-        return new UserDTO(user);
+        URI location = URI.create("/users/" + user.getId());
+        return ResponseEntity.created(location).body(new UserDTO(user));
     }
 
     @Operation(summary = "Get user by ID", description = "Retrieves a user by their unique ID.")
     @GetMapping("/{id}")
-    public UserDTO getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
         User user = findUserById.findById(id);
-        return new UserDTO(user);
+        return ResponseEntity.ok(new UserDTO(user));
     }
 
     @Operation(summary = "Get all users", description = "Retrieves a paginated list of all users in the system.")
     @GetMapping
-    public Page <UserDTO> getAllUserDTOS(@ParameterObject Pageable pageable) {
-        return listUsers.getAllUsers(pageable)
-                .map(UserDTO::new);
+    public ResponseEntity<Page <UserDTO>> getAllUserDTOS(@ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(listUsers.getAllUsers(pageable)
+                .map(UserDTO::new));
     }
 
     @Operation(summary = "Update user", description = "Updates the details of an existing user.")
     @PutMapping
-    public UserDTO updateUser(@RequestBody @Valid UpdateUserDTO dto) {
+    public ResponseEntity<UserDTO> updateUser(@RequestBody @Valid UpdateUserDTO dto) {
         User update = updateUser.updateUser(new User(dto.id(), dto.name(), dto.email(), dto.password()));
 
-        return new UserDTO(update);
+        return ResponseEntity.ok(new UserDTO(update));
     }
 
     @Operation(summary = "Delete user", description = "Deletes a user from the system by their unique ID.")
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         deleteUser.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 }

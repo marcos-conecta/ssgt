@@ -11,14 +11,15 @@ import br.com.oxy.ssgt.infra.persistence.task.TaskStatus;
 import br.com.oxy.ssgt.infra.security.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 
 
@@ -61,7 +62,7 @@ public class TaskController {
 
     @Operation(summary = "Create a new task", description = "Registers a new task in the system.")
     @PostMapping
-    public TaskDTO createTask(@RequestBody @Valid CreateTaskDTO dto) {
+    public ResponseEntity<TaskDTO> createTask(@RequestBody @Valid CreateTaskDTO dto) {
         Project project = findProjectById.findById(dto.projectId());
         User assignedUser = findUserById.findById(dto.assignedUserId());
         Task task =  createTask.registerTask(
@@ -75,20 +76,20 @@ public class TaskController {
                         project,
                         assignedUser)
         );
-
-        return new TaskDTO(task);
+        URI location = URI.create("/tasks/" + task.getId());
+        return ResponseEntity.created(location).body(new TaskDTO(task));
     }
 
     @Operation(summary = "Get task by ID", description = "Retrieves a task by its unique identifier.")
     @GetMapping("/{id}")
-    public TaskDTO getTaskById(@PathVariable Long id) {
+    public ResponseEntity<TaskDTO> getTaskById(@PathVariable Long id) {
         Task task = findTaskById.findById(id);
-        return new TaskDTO(task);
+        return ResponseEntity.ok(new TaskDTO(task));
     }
 
     @Operation(summary = "Get all tasks with optional filters", description = "Retrieves a paginated list of tasks with optional filtering by status, priority, assigned user, and date range.")
     @GetMapping
-    public Page <TaskDTO> getAllTaskDTOS(
+    public ResponseEntity<Page <TaskDTO>> getAllTaskDTOS(
             @RequestParam(required = false) String text,
             @RequestParam(required = false) TaskStatus taskStatus,
             @RequestParam(required = false) TaskPriority taskPriority,
@@ -106,14 +107,14 @@ public class TaskController {
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        return listTasks.getAllTasks(text, taskStatus, taskPriority, assignedUserId, startDate, endDate, pageable)
-                .map(TaskDTO::new);
+        return ResponseEntity.ok(listTasks.getAllTasks(text, taskStatus, taskPriority, assignedUserId, startDate, endDate, pageable)
+                .map(TaskDTO::new));
 
     }
 
     @Operation(summary = "Update an existing task", description = "Updates the details of an existing task in the system.")
     @PutMapping
-    public TaskDTO updateTask(@RequestBody @Valid UpdateTaskDTO dto, Authentication authentication) {
+    public ResponseEntity<TaskDTO> updateTask(@RequestBody @Valid UpdateTaskDTO dto, Authentication authentication) {
         Project project = findProjectById.findById(dto.projectId());
         User assignedUser = findUserById.findById(dto.assignedUserId());
 
@@ -131,18 +132,19 @@ public class TaskController {
                 ),
                 currentUserId
         );
-        return new TaskDTO(updateTask);
+        return ResponseEntity.ok(new TaskDTO(updateTask));
     }
 
     @Operation(summary = "Delete a task", description = "Deletes a task from the system by its unique identifier.")
     @DeleteMapping("/{id}")
-    public void deleteTask(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
         deleteTask.deleteTask(id);
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Get tasks by project ID", description = "Retrieves a paginated list of tasks associated with a specific project.")
     @GetMapping("/{projectId}/tasks")
-    public Page<TaskDTO> getTasksByProject(
+    public ResponseEntity<Page<TaskDTO>> getTasksByProject(
             @PathVariable Long projectId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -155,6 +157,6 @@ public class TaskController {
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        return listTaskByProject.execute(projectId, pageable).map(TaskDTO::new);
+        return ResponseEntity.ok(listTaskByProject.execute(projectId, pageable).map(TaskDTO::new));
     }
 }

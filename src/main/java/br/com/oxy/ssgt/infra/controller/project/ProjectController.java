@@ -12,9 +12,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 
@@ -55,7 +57,7 @@ public class ProjectController {
 
     @Operation(summary = "Create a new project", description = "Registers a new project in the system.")
     @PostMapping
-    public ProjectDTO createProject(@RequestBody @Valid CreateProjectDTO dto) {
+    public ResponseEntity<ProjectDTO> createProject(@RequestBody @Valid CreateProjectDTO dto) {
         User owner = findUserById.findById(dto.ownerId());
 
         List<User> members = dto.members()
@@ -71,20 +73,20 @@ public class ProjectController {
                         owner,
                         members)
                 );
-
-        return new ProjectDTO(project);
+        URI location = URI.create("/projects/" + project.getId());
+        return ResponseEntity.created(location).body(new ProjectDTO(project));
     }
 
     @Operation(summary = "Get project by ID", description = "Retrieves a project by its unique ID.")
     @GetMapping("/{id}")
-    public ProjectDTO getProjectById(@PathVariable Long id) {
+    public ResponseEntity<ProjectDTO> getProjectById(@PathVariable Long id) {
         Project project = findProjectById.findById(id);
-        return new ProjectDTO(project);
+        return ResponseEntity.ok(new ProjectDTO(project));
     }
 
     @Operation(summary = "Get all projects", description = "Retrieves a paginated list of all projects in the system.")
     @GetMapping
-    public Page <ProjectDTO> getAllProjectDTOS(
+    public ResponseEntity<Page <ProjectDTO>> getAllProjectDTOS(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
@@ -96,12 +98,12 @@ public class ProjectController {
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        return listProjects.getAllProjects(pageable).map(ProjectDTO::new);
+        return ResponseEntity.ok(listProjects.getAllProjects(pageable).map(ProjectDTO::new));
     }
 
     @Operation(summary = "Update project", description = "Updates the details of an existing project.")
     @PutMapping
-    public ProjectDTO updateProject(@RequestBody @Valid ProjectDTO dto, Authentication authentication) {
+    public ResponseEntity<ProjectDTO> updateProject(@RequestBody @Valid ProjectDTO dto, Authentication authentication) {
         User owner = findUserById.findById(dto.ownerId());
 
 
@@ -122,19 +124,21 @@ public class ProjectController {
 
         Project projectUpdate = updateProject.updateProject(currentUserId, project);
 
-        return new ProjectDTO(projectUpdate);
+        return ResponseEntity.ok(new ProjectDTO(projectUpdate));
     }
 
     @Operation(summary = "Delete project", description = "Deletes a project from the system by its unique ID.")
     @DeleteMapping("/{id}")
-    public void deleteProject(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
         deleteProject.deleteProject(id);
+
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Get project task summary", description = "Retrieves a summary of tasks for a specific project, including counts of tasks by status and priority.")
     @GetMapping("/{projectId}/tasks/summary")
-    public ProjectTaskSummaryDTO getProjectTaskSummary(@PathVariable Long projectId) {
-        return getProjectTaskSummary.execute(projectId);
+    public ResponseEntity<ProjectTaskSummaryDTO> getProjectTaskSummary(@PathVariable Long projectId) {
+        return ResponseEntity.ok(getProjectTaskSummary.execute(projectId));
     }
 
 }
