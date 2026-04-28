@@ -9,6 +9,17 @@ import java.time.LocalDateTime;
 
 public class TaskSpecification {
 
+    public static Specification<TaskEntity> belongsToProjectUser(Long currentUserId){
+
+        return (root, query, criteriaBuilder) -> {
+            if (currentUserId == null) {
+                return criteriaBuilder.disjunction();
+            }
+            return criteriaBuilder.equal(root.join("project").join("members").get("user").get("id"), currentUserId
+            );
+        };
+    }
+
     public static Specification<TaskEntity> hasStatus(TaskStatus status) {
         return (root, query, criteriaBuilder) ->
                 status == null

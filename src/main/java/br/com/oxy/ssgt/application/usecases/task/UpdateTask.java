@@ -28,7 +28,7 @@ public class UpdateTask {
 
         validateDoneCannotReturnToTodo(currentTask, newTask);
 
-        validateCriticalOnlyAdminCanClose(currentTask, currentUserId);
+        validateCriticalOnlyAdminCanClose(currentTask, newTask, currentUserId);
 
         validateWipLimit(currentTask, newTask);
 
@@ -53,10 +53,10 @@ public class UpdateTask {
         }
     }
 
-    private void validateCriticalOnlyAdminCanClose(Task currentTask, Long currentUserId) {
+    private void validateCriticalOnlyAdminCanClose(Task currentTask, Task newTask, Long currentUserId) {
         Long projectId = currentTask.getProject().getId();
 
-        if (currentTask.getPriority() == TaskPriority.CRITICAL && currentTask.getStatus() == TaskStatus.DONE) {
+        if (currentTask.getPriority() == TaskPriority.CRITICAL && newTask.getStatus() == TaskStatus.DONE) {
 
             boolean isAdmin = projectRepository.isAdmin(projectId, currentUserId);
             if (!isAdmin) {

@@ -23,13 +23,14 @@ public interface TaskRepositoryApplication {
 
     long countInProgressByAssigneeUserId(Long assignedUserId);
 
-    Page<Task> findAllTasksByCriteria(String text,
-                                 TaskStatus status,
-                                 TaskPriority priority,
-                                 Long assignedUserId,
-                                 LocalDateTime startDate,
-                                 LocalDateTime endDate,
-                                 Pageable pageable
+    Page<Task> findAllTasksByCriteria(Long currentUserId,
+                                      String text,
+                                      TaskStatus status,
+                                      TaskPriority priority,
+                                      Long assignedUserId,
+                                      LocalDateTime startDate,
+                                      LocalDateTime endDate,
+                                      Pageable pageable
     );
 
     Map<TaskStatus, Long> countByStatusForProject(Long projectId);

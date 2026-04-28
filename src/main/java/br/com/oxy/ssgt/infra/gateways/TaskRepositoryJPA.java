@@ -82,7 +82,9 @@ public class TaskRepositoryJPA implements TaskRepositoryApplication {
     }
 
     @Override
-    public Page<Task> findAllTasksByCriteria(String text,
+    public Page<Task> findAllTasksByCriteria(
+                                        Long currentUserId,
+                                        String text,
                                         TaskStatus status,
                                         TaskPriority priority,
                                         Long assignedUserId,
@@ -92,6 +94,7 @@ public class TaskRepositoryJPA implements TaskRepositoryApplication {
     {
 
         Specification<TaskEntity> specification = Specification.allOf(
+                TaskSpecification.belongsToProjectUser(currentUserId),
                 TaskSpecification.hasTextLike(text),
                 TaskSpecification.hasStatus(status),
                 TaskSpecification.hasPriority(priority),

@@ -99,7 +99,8 @@ public class TaskController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction
+            @RequestParam(defaultValue = "asc") String direction,
+            Authentication authentication
     ) {
         Sort sort = direction.equalsIgnoreCase("desc")
                 ? Sort.by(sortBy).descending()
@@ -107,7 +108,9 @@ public class TaskController {
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        return ResponseEntity.ok(listTasks.getAllTasks(text, taskStatus, taskPriority, assignedUserId, startDate, endDate, pageable)
+        Long currentUserId = securityUtils.getCurrentUserId(authentication);
+
+        return ResponseEntity.ok(listTasks.getAllTasks(currentUserId, text, taskStatus, taskPriority, assignedUserId, startDate, endDate, pageable)
                 .map(TaskDTO::new));
 
     }

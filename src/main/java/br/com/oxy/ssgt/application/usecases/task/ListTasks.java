@@ -17,7 +17,8 @@ public class ListTasks {
         this.repository = repository;
     }
 
-    public Page<Task> getAllTasks(String text,
+    public Page<Task> getAllTasks(Long currentUserId,
+                                  String text,
                                   TaskStatus taskStatus,
                                   TaskPriority taskPriority,
                                   Long assignedUserId,
@@ -25,6 +26,6 @@ public class ListTasks {
                                   LocalDateTime endDate,
                                   Pageable pageable
     ) {
-        return this.repository.findAllTasksByCriteria(text,taskStatus, taskPriority, assignedUserId, startDate, endDate, pageable);
+        return this.repository.findAllTasksByCriteria(currentUserId, text,taskStatus, taskPriority, assignedUserId, startDate, endDate, pageable);
     }
 }
