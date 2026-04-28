@@ -10,9 +10,9 @@ public interface ProjectRepositoryApplication {
 
     Page<Project> getAllProjects(Pageable pageable);
 
-    Project findById(Long id);
+    Project findById(Long projectId);
 
-    void deleteProject(Long id);
+    void deleteProject(Long projectId);
 
     Project updateProject(Project project);
 

@@ -11,7 +11,7 @@ public class FindUserById {
         this.repository = repository;
     }
 
-    public User findById(Long id) {
-        return repository.findById(id);
+    public User findById(Long userId) {
+        return repository.findById(userId);
     }
 }

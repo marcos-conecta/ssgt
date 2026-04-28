@@ -11,7 +11,7 @@ public class DeleteTask {
         this.repository = repository;
     }
 
-    public void deleteTask(Long id) {
-        repository.deleteTask(id);
+    public void deleteTask(Long taskId) {
+        repository.deleteTask(taskId);
     }
 }

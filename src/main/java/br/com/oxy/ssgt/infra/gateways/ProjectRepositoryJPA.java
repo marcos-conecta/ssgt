@@ -37,15 +37,15 @@ public class ProjectRepositoryJPA implements ProjectRepositoryApplication {
     }
 
     @Override
-    public Project findById(Long id) {
-        return repository.findById(id)
+    public Project findById(Long projectId) {
+        return repository.findById(projectId)
                 .map(mapper::toDomain)
-                .orElseThrow(() -> new NotFoundException("Project not found with id: " + id));
+                .orElseThrow(() -> new NotFoundException("Project not found with id: " + projectId));
     }
 
     @Override
-    public void deleteProject(Long id) {
-        repository.deleteById(id);
+    public void deleteProject(Long projectId) {
+        repository.deleteById(projectId);
 
     }
 

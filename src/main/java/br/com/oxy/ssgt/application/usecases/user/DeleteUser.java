@@ -10,7 +10,7 @@ public class DeleteUser {
         this.repository = repository;
     }
 
-    public void deleteUser(Long id) {
-        repository.deleteUser(id);
+    public void deleteUser(Long userId) {
+        repository.deleteUser(userId);
     }
 }

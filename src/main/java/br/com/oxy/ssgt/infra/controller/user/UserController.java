@@ -41,9 +41,9 @@ public class UserController {
     }
 
     @Operation(summary = "Get user by ID", description = "Retrieves a user by their unique ID.")
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
-        User user = findUserById.findById(id);
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long userId) {
+        User user = findUserById.findById(userId);
         return ResponseEntity.ok(new UserDTO(user));
     }
 
@@ -63,9 +63,9 @@ public class UserController {
     }
 
     @Operation(summary = "Delete user", description = "Deletes a user from the system by their unique ID.")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        deleteUser.deleteUser(id);
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
+        deleteUser.deleteUser(userId);
         return ResponseEntity.noContent().build();
     }
 }

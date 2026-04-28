@@ -11,7 +11,7 @@ public class FindTaskById {
         this.repository = repository;
     }
 
-    public Task findById(Long id) {
-        return repository.findById(id);
+    public Task findById(Long taskId) {
+        return repository.findById(taskId);
     }
 }

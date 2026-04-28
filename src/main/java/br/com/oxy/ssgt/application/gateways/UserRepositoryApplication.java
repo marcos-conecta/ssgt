@@ -10,9 +10,9 @@ public interface UserRepositoryApplication {
 
     Page<User> getAllUsers(Pageable pageable);
 
-    User findById(Long id);
+    User findById(Long userId);
 
-    void deleteUser(Long id);
+    void deleteUser(Long userId);
 
     User updateUser(User user);
 

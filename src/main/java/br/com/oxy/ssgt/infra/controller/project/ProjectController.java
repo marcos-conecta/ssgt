@@ -78,9 +78,9 @@ public class ProjectController {
     }
 
     @Operation(summary = "Get project by ID", description = "Retrieves a project by its unique ID.")
-    @GetMapping("/{id}")
-    public ResponseEntity<ProjectDTO> getProjectById(@PathVariable Long id) {
-        Project project = findProjectById.findById(id);
+    @GetMapping("/{projectId}")
+    public ResponseEntity<ProjectDTO> getProjectById(@PathVariable Long projectId) {
+        Project project = findProjectById.findById(projectId);
         return ResponseEntity.ok(new ProjectDTO(project));
     }
 
@@ -122,15 +122,17 @@ public class ProjectController {
                 members
         );
 
-        Project projectUpdate = updateProject.updateProject(currentUserId, project);
+        Project projectUpdate = updateProject.updateProject(project, currentUserId);
 
         return ResponseEntity.ok(new ProjectDTO(projectUpdate));
     }
 
     @Operation(summary = "Delete project", description = "Deletes a project from the system by its unique ID.")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
-        deleteProject.deleteProject(id);
+    @DeleteMapping("/{projectId}")
+    public ResponseEntity<Void> deleteProject(@PathVariable Long projectId, Authentication authentication) {
+        Long currentUserId = securityUtils.getCurrentUserId(authentication);
+
+        deleteProject.deleteProject(projectId, currentUserId);
 
         return ResponseEntity.noContent().build();
     }

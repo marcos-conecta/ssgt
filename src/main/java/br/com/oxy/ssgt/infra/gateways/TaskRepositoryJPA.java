@@ -39,21 +39,15 @@ public class TaskRepositoryJPA implements TaskRepositoryApplication {
     }
 
     @Override
-    public Page<Task> getAllTasks(Pageable pageable) {
-        return repository.findAll(pageable)
-                .map(mapper::toDomain);
-    }
-
-    @Override
-    public Task findById(Long id) {
-        return repository.findById(id)
+    public Task findById(Long taskId) {
+        return repository.findById(taskId)
                 .map(mapper::toDomain)
-                .orElseThrow(() -> new NotFoundException("Task not found with id: " + id));
+                .orElseThrow(() -> new NotFoundException("Task not found with id: " + taskId));
     }
 
     @Override
-    public void deleteTask(Long id) {
-        repository.deleteById(id);
+    public void deleteTask(Long taskId) {
+        repository.deleteById(taskId);
 
     }
 
@@ -88,7 +82,7 @@ public class TaskRepositoryJPA implements TaskRepositoryApplication {
     }
 
     @Override
-    public Page<Task> findAllByCriteria(String text,
+    public Page<Task> findAllTasksByCriteria(String text,
                                         TaskStatus status,
                                         TaskPriority priority,
                                         Long assignedUserId,

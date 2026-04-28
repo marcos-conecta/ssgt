@@ -3,7 +3,6 @@ package br.com.oxy.ssgt.infra.gateways;
 
 import br.com.oxy.ssgt.application.gateways.UserRepositoryApplication;
 import br.com.oxy.ssgt.domain.entities.user.User;
-import br.com.oxy.ssgt.infra.execption.BusinessException;
 import br.com.oxy.ssgt.infra.execption.NotFoundException;
 import br.com.oxy.ssgt.infra.persistence.user.UserEntity;
 import br.com.oxy.ssgt.infra.persistence.user.UserRepository;
@@ -34,15 +33,15 @@ public class UserRepositoryJPA implements UserRepositoryApplication {
     }
 
     @Override
-    public User findById(Long id) {
-        return repository.findById(id)
+    public User findById(Long userId) {
+        return repository.findById(userId)
                 .map(mapper::toDomain)
-                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
     }
 
     @Override
-    public void deleteUser(Long id) {
-        repository.deleteById(id);
+    public void deleteUser(Long userId) {
+        repository.deleteById(userId);
 
     }
 

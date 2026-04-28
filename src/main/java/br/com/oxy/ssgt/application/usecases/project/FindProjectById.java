@@ -11,7 +11,7 @@ public class FindProjectById {
         this.repository = repository;
     }
 
-    public Project findById(Long id) {
-        return repository.findById(id);
+    public Project findById(Long projectId) {
+        return repository.findById(projectId);
     }
 }

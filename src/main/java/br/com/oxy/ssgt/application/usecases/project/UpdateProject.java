@@ -12,10 +12,10 @@ public class UpdateProject {
         this.repository = repository;
     }
 
-    public Project updateProject(Long currentUserId, Project project) {
+    public Project updateProject(Project project, Long currentUserId) {
         boolean isAdmin = repository.isAdmin(
-                currentUserId,
-                project.getId()
+                project.getId(),
+                currentUserId
         );
 
         if(!isAdmin) {

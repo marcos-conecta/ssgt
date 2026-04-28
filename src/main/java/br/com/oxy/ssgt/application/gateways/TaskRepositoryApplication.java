@@ -1,7 +1,6 @@
 package br.com.oxy.ssgt.application.gateways;
 
 import br.com.oxy.ssgt.domain.entities.task.Task;
-import br.com.oxy.ssgt.infra.persistence.task.TaskEntity;
 import br.com.oxy.ssgt.infra.persistence.task.TaskPriority;
 import br.com.oxy.ssgt.infra.persistence.task.TaskStatus;
 import org.springframework.data.domain.Page;
@@ -14,11 +13,9 @@ public interface TaskRepositoryApplication {
 
     Task registerTask(Task task);
 
-    Page<Task> getAllTasks(Pageable pageable);
+    Task findById(Long taskId);
 
-    Task findById(Long id);
-
-    void deleteTask(Long id);
+    void deleteTask(Long taskId);
 
     Task updateTask(Task task);
 
@@ -26,7 +23,7 @@ public interface TaskRepositoryApplication {
 
     long countInProgressByAssigneeUserId(Long assignedUserId);
 
-    Page<Task> findAllByCriteria(String text,
+    Page<Task> findAllTasksByCriteria(String text,
                                  TaskStatus status,
                                  TaskPriority priority,
                                  Long assignedUserId,

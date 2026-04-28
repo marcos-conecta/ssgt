@@ -81,9 +81,9 @@ public class TaskController {
     }
 
     @Operation(summary = "Get task by ID", description = "Retrieves a task by its unique identifier.")
-    @GetMapping("/{id}")
-    public ResponseEntity<TaskDTO> getTaskById(@PathVariable Long id) {
-        Task task = findTaskById.findById(id);
+    @GetMapping("/{taskId}")
+    public ResponseEntity<TaskDTO> getTaskById(@PathVariable Long taskId) {
+        Task task = findTaskById.findById(taskId);
         return ResponseEntity.ok(new TaskDTO(task));
     }
 
@@ -136,9 +136,9 @@ public class TaskController {
     }
 
     @Operation(summary = "Delete a task", description = "Deletes a task from the system by its unique identifier.")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
-        deleteTask.deleteTask(id);
+    @DeleteMapping("/{taskId}")
+    public ResponseEntity<Void> deleteTask(@PathVariable Long taskId) {
+        deleteTask.deleteTask(taskId);
         return ResponseEntity.noContent().build();
     }
 

@@ -25,6 +25,6 @@ public class ListTasks {
                                   LocalDateTime endDate,
                                   Pageable pageable
     ) {
-        return this.repository.findAllByCriteria(text,taskStatus, taskPriority, assignedUserId, startDate, endDate, pageable);
+        return this.repository.findAllTasksByCriteria(text,taskStatus, taskPriority, assignedUserId, startDate, endDate, pageable);
     }
 }
